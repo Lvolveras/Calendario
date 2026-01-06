@@ -1,0 +1,492 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CALENDARIO 2026 - FECHAS CLAVES DE GESTIÓN POS, PDV y BTL</title>
+<style>
+  :root{
+    /* Paleta y tipografías */
+    --header-bg: rgba(16,72,97,1);
+    --month-title-bg: rgba(217,217,217,1);
+    --day-header-bg: rgba(242,242,242,1);
+    --weekend-red: rgba(255,0,0,1);
+    --legend-border: #d3d3d3;
+
+    --yellow-light: #fff7a8;       /* Festivos */
+    --green-dark: #145A32;         /* Actualización del GP - Trade y Mercadeo */
+    --green-light: #C8E6C9;        /* Creación de aplicativos - Trade */
+    --pink: #F8BBD0;               /* Consolidación del GP - Finanzas */
+    --pink-dark: #AD1457;          /* Aprobación de aplicativos (fuente blanca) */
+    --brown: #795548;              /* Dashboard finanzas (fuente blanca) */
+    --blue-light: #90CAF9;         /* Novedades a contabilidad */
+    --red-light: #FFCDD2;          /* Respuestas de contabilidad */
+
+    --cell-size: 36px;             /* altura compacta de cada día */
+    --font-family: Arial, Helvetica, sans-serif;
+  }
+
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family: var(--font-family);
+    color:#000;
+    background:#fff;
+  }
+
+  /* Título principal (centrado) */
+  header.site-header{
+    background: var(--header-bg);
+    color:#fff;
+    padding:16px 20px;
+    text-align:center; /* centrado */
+  }
+  header.site-header h1{
+    margin:0;
+    font-size:25px; /* Arial 25px */
+    line-height:1.3;
+    text-transform:uppercase;
+    letter-spacing:.5px;
+  }
+
+  /* Glosario (uno debajo del otro) */
+  .legend{
+    list-style:none;
+    padding:12px 20px 0 20px;
+    margin:0;
+  }
+  .legend li{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin:6px 0;
+    font-size:14px;
+  }
+  .legend .swatch{
+    display:inline-block;
+    width:18px;
+    height:18px;
+    border:1px solid var(--legend-border); /* borde gris claro */
+  }
+  .swatch.yellow{background:var(--yellow-light);}
+  .swatch.green-dark{background:var(--green-dark);}
+  .swatch.green-light{background:var(--green-light);}
+  .swatch.pink{background:var(--pink);}
+  .swatch.pink-dark{background:var(--pink-dark);}
+  .swatch.brown{background:var(--brown);}
+  .swatch.blue-light{background:var(--blue-light);}
+  .swatch.red-light{background:var(--red-light);}
+
+  /* Contenedor del año en bloques de 3 meses */
+  .year{
+    padding:16px 20px 24px;
+    display:flex;
+    flex-direction:column;
+    gap:24px;
+  }
+  .quarter{
+    display:grid;
+    grid-template-columns: repeat(3, minmax(280px, 1fr));
+    gap:16px;
+  }
+
+  /* Mes */
+  .month{
+    border:1px solid #e0e0e0;
+    border-radius:8px;
+    overflow:hidden;
+    position:relative;
+    background:#fff;
+  }
+  .month-header{
+    background: var(--month-title-bg); /* gris rgba(217,217,217) */
+    color:#000;
+    font-weight:bold; /* fuente negra con negrita */
+    text-align:center;
+    padding:10px;
+  }
+
+  /* Encabezado de días (Lun-Dom) */
+  .day-header{
+    display:grid;
+    grid-template-columns: repeat(7, 1fr);
+    background: var(--day-header-bg); /* gris claro rgba(242,242,242) */
+    color:#000;
+    font-weight:normal; /* sin negrita */
+    font-size:13px;
+    border-bottom:1px solid #e0e0e0;
+  }
+  .day-header div{
+    padding:8px 6px;
+    text-align:center;
+  }
+
+  /* Grid de semanas (cada fila es una semana) */
+  .weeks{
+    display:grid;
+    grid-template-columns: repeat(7, 1fr);
+    grid-auto-rows: var(--cell-size);
+  }
+
+  /* Cada día (recuadro) */
+  .day{
+    border:1px solid #eee;
+    display:grid;
+    place-items:center;            /* centrado vertical y horizontal */
+    font-size:13px;
+    position:relative;
+    line-height:1;
+    background:#fff;
+  }
+  .day.empty{
+    background:#fafafa;
+  }
+
+  /* Fines de semana */
+  .day.sat .num,
+  .day.sun .num{
+    color: var(--weekend-red); /* rojo rgba(255,0,0) */
+    text-decoration: underline;
+  }
+
+  /* Festivos (amarillo claro y fuente negra) */
+  .day.holiday{
+    background: var(--yellow-light);
+    color:#000;
+    font-weight:normal;
+    border-color:#e6db7a;
+  }
+
+  /* Colores de tareas */
+  .day.green-dark{ background: var(--green-dark); color:#fff; }  /* fuente blanca */
+  .day.green-light{ background: var(--green-light); color:#000; }
+  .day.pink{ background: var(--pink); color:#000; }
+  .day.pink-dark{ background: var(--pink-dark); color:#fff; }    /* fuente blanca */
+  .day.brown{ background: var(--brown); color:#fff; }            /* fuente blanca */
+  .day.blue-light{ background: var(--blue-light); color:#000; }
+  .day.red-light{ background: var(--red-light); color:#000; }
+
+  /* Negrita puntual (p.ej. 8 de abril) */
+  .day.bold .num{ font-weight:bold; }
+
+  /* Tooltip barra inferior del mes (amarilla, Arial 10px, ancho completo) */
+  .month .tooltip-bar{
+    position:absolute;
+    left:0; right:0; bottom:0;
+    background: var(--yellow-light);
+    border-top:1px solid #e0e0e0;
+    font-family: var(--font-family);
+    font-size:10px; /* Arial 10px */
+    padding:6px 8px;
+    min-height:24px;
+    display:none;
+    white-space:pre-wrap;
+  }
+  .month.show-tooltip .tooltip-bar{ display:block; }
+
+  /* Responsive */
+  @media (max-width: 980px){
+    .quarter{ grid-template-columns: repeat(2, minmax(260px,1fr)); }
+  }
+  @media (max-width: 640px){
+    .quarter{ grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <h1>CALENDARIO 2026 - FECHAS CLAVES DE GESTIÓN POS, PDV y BTL</h1>
+</header>
+
+<ul class="legend" aria-label="Glosario de marcadores">
+  <li><span class="swatch yellow"></span> Festivos</li>
+  <li><span class="swatch green-dark"></span> Actualización del GP - Trade y Mercadeo</li>
+  <li><span class="swatch pink"></span> Consolidación del GP, para proyectar PVO y enviar solicitud de POS a contabilidad.</li>
+  <li><span class="swatch green-light"></span> Trade crea los aplicativos</li>
+  <li><span class="swatch pink-dark"></span> Director de Trade, Dirección Comercial, Gerentes de canal y Director de Mercadeo aprueban aplicativos.</li>
+  <li><span class="swatch brown"></span> Finanzas enviará Dashboard de inversiones (Excel y Power BI), con cierre de cada mes</li>
+  <li><span class="swatch blue-light"></span> Trade y Gerentes de marca enviarán las novedades del mes de cierre.</li>
+  <li><span class="swatch red-light"></span> Contabilidad: Da respuesta a las novedades</li>
+</ul>
+
+<main class="year" id="calendar"></main>
+
+<script>
+/* ========= Configuración general ========= */
+const YEAR = 2026;
+
+/* Encabezado de días (lunes a domingo) */
+const DAY_NAMES = ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
+
+/* Festivos oficiales de Colombia 2026 (amarillo + tooltip) */
+/* Verificados con KienyKe, timeanddate y Calendario de Colombia (fuentes 2026). */
+const HOLIDAYS_2026 = {
+  '2026-01-01':'Año Nuevo',
+  '2026-01-12':'Reyes Magos (traslado)',
+  '2026-03-23':'San José (traslado)',
+  '2026-04-02':'Jueves Santo',
+  '2026-04-03':'Viernes Santo',
+  '2026-05-01':'Día del Trabajo',
+  '2026-05-18':'Ascensión (traslado)',
+  '2026-06-08':'Corpus Christi (traslado)',
+  '2026-06-15':'Sagrado Corazón (traslado)',
+  '2026-06-29':'San Pedro y San Pablo',
+  '2026-07-20':'Independencia de Colombia',
+  '2026-08-07':'Batalla de Boyacá',
+  '2026-08-17':'Asunción de la Virgen (traslado)',
+  '2026-10-12':'Día de la Raza',
+  '2026-11-02':'Todos los Santos (traslado)',
+  '2026-11-16':'Independencia de Cartagena (traslado)',
+  '2026-12-08':'Inmaculada Concepción',
+  '2026-12-25':'Navidad'
+};
+
+/* Fechas específicas por mes (POS/PDV/BTL) — textos ajustados */
+const TASKS = [
+  /* Enero */
+  {d:'2026-01-09', cls:'green-dark', tip:'Actualización del GP - Trade y Mercadeo'},
+  {d:'2026-01-14', cls:'green-light', tip:'Creación de aplicativos - Trade'},
+  {d:'2026-01-16', cls:'pink-dark', tip:'Aprobación de aplicativos'},
+  {d:'2026-01-19', cls:'pink', tip:'Consolidación del GP, proyectar PVO y provisión de POS - Finanzas'},
+  {d:'2026-01-23', cls:'brown', tip:'Enviar Dashboard de inversiones (Excel y Power BI) - Finanzas'},
+
+  /* Febrero */
+  {d:'2026-02-20', cls:'green-dark', tip:'Actualización del GP - Trade y Mercadeo'},
+  {d:'2026-02-09', cls:'green-light', tip:'Creación de aplicativos - Trade'},
+  {d:'2026-02-11', cls:'pink-dark', tip:'Aprobación de aplicativos'},
+  {d:'2026-02-06', cls:'pink', tip:'Consolidación del GP, proyectar PVO y provisión de POS - Finanzas'},
+  {d:'2026-02-12', cls:'brown', tip:'Enviar Dashboard de inversiones (Excel y Power BI) - Finanzas'},
+  {d:'2026-02-17', cls:'blue-light', tip:'Envío de novedades a contabilidad'},
+  {d:'2026-02-19', cls:'red-light', tip:'Respuestas de contabilidad'},
+
+  /* Marzo */
+  {d:'2026-03-20', cls:'green-dark', tip:'Actualización del GP - Trade y Mercadeo'},
+  {d:'2026-03-09', cls:'green-light', tip:'Creación de aplicativos - Trade'},
+  {d:'2026-03-11', cls:'pink-dark', tip:'Aprobación de aplicativos'},
+  {d:'2026-03-06', cls:'pink', tip:'Consolidación del GP, proyectar PVO y provisión de POS - Finanzas'},
+  {d:'2026-03-12', cls:'brown', tip:'Enviar Dashboard de inversiones (Excel y Power BI) - Finanzas'},
+  {d:'2026-03-17', cls:'blue-light', tip:'Envío de novedades a contabilidad'},
+  {d:'2026-03-25', cls:'red-light', tip:'Respuestas de contabilidad'},
+
+  /* Abril */
+  {d:'2026-04-20', cls:'green-dark', tip:'Actualización del GP - Trade y Mercadeo'},
+  {d:'2026-04-08', cls:'green-light bold', tip:'Creación de aplicativos - Trade'},
+  {d:'2026-04-10', cls:'pink-dark', tip:'Aprobación de aplicativos'},
+  {d:'2026-04-06', cls:'pink', tip:'Consolidación del GP, proyectar PVO y provisión de POS - Finanzas'},
+  {d:'2026-04-13', cls:'brown', tip:'Enviar Dashboard de inversiones (Excel y Power BI) - Finanzas'},
+  {d:'2026-04-16', cls:'blue-light', tip:'Envío de novedades a contabilidad'},
+  {d:'2026-04-21', cls:'red-light', tip:'Respuestas de contabilidad'},
+
+  /* Mayo */
+  {d:'2026-05-20', cls:'green-dark', tip:'Actualización del GP - Trade y Mercadeo'},
+  {d:'2026-05-08', cls:'green-light', tip:'Creación de aplicativos - Trade'},
+  {d:'2026-05-12', cls:'pink-dark', tip:'Aprobación de aplicativos'},
+  {d:'2026-05-06', cls:'pink', tip:'Consolidación del GP, proyectar PVO y provisión de POS - Finanzas'},
+  {d:'2026-05-13', cls:'brown', tip:'Enviar Dashboard de inversiones (Excel y Power BI) - Finanzas'},
+  {d:'2026-05-19', cls:'blue-light', tip:'Envío de novedades a contabilidad'},
+  {d:'2026-05-22', cls:'red-light', tip:'Respuestas de contabilidad'},
+
+  /* Junio */
+  {d:'2026-06-19', cls:'green-dark', tip:'Actualización del GP - Trade y Mercadeo'},
+  {d:'2026-06-09', cls:'green-light', tip:'Creación de aplicativos - Trade'},
+  {d:'2026-06-11', cls:'pink-dark', tip:'Aprobación de aplicativos'},
+  {d:'2026-06-05', cls:'pink', tip:'Consolidación del GP, proyectar PVO y provisión de POS - Finanzas'},
+  {d:'2026-06-12', cls:'brown', tip:'Enviar Dashboard de inversiones (Excel y Power BI) - Finanzas'},
+  {d:'2026-06-17', cls:'blue-light', tip:'Envío de novedades a contabilidad'},
+  {d:'2026-06-22', cls:'red-light', tip:'Respuestas de contabilidad'},
+
+  /* Julio */
+  {d:'2026-07-21', cls:'green-dark', tip:'Actualización del GP - Trade y Mercadeo'},
+  {d:'2026-07-08', cls:'green-light', tip:'Creación de aplicativos - Trade'},
+  {d:'2026-07-10', cls:'pink-dark', tip:'Aprobación de aplicativos'},
+  {d:'2026-07-06', cls:'pink', tip:'Consolidación del GP, proyectar PVO y provisión de POS - Finanzas'},
+  {d:'2026-07-13', cls:'brown', tip:'Enviar Dashboard de inversiones (Excel y Power BI) - Finanzas'},
+  {d:'2026-07-16', cls:'blue-light', tip:'Envío de novedades a contabilidad'},
+  {d:'2026-07-22', cls:'red-light', tip:'Respuestas de contabilidad'},
+
+  /* Agosto */
+  {d:'2026-08-20', cls:'green-dark', tip:'Actualización del GP - Trade y Mercadeo'},
+  {d:'2026-08-10', cls:'green-light', tip:'Creación de aplicativos - Trade'},
+  {d:'2026-08-12', cls:'pink-dark', tip:'Aprobación de aplicativos'},
+  {d:'2026-08-06', cls:'pink', tip:'Consolidación del GP, proyectar PVO y provisión de POS - Finanzas'},
+  {d:'2026-08-13', cls:'brown', tip:'Enviar Dashboard de inversiones (Excel y Power BI) - Finanzas'},
+  {d:'2026-08-19', cls:'blue-light', tip:'Envío de novedades a contabilidad'},
+  {d:'2026-08-25', cls:'red-light', tip:'Respuestas de contabilidad'},
+
+  /* Septiembre */
+  {d:'2026-09-21', cls:'green-dark', tip:'Actualización del GP - Trade y Mercadeo'},
+  {d:'2026-09-08', cls:'green-light', tip:'Creación de aplicativos - Trade'},
+  {d:'2026-09-10', cls:'pink-dark', tip:'Aprobación de aplicativos'},
+  {d:'2026-09-07', cls:'pink', tip:'Consolidación del GP, proyectar PVO y provisión de POS - Finanzas'},
+  {d:'2026-09-11', cls:'brown', tip:'Enviar Dashboard de inversiones (Excel y Power BI) - Finanzas'},
+  {d:'2026-09-16', cls:'blue-light', tip:'Envío de novedades a contabilidad'},
+  {d:'2026-09-22', cls:'red-light', tip:'Respuestas de contabilidad'},
+
+  /* Octubre */
+  {d:'2026-10-20', cls:'green-dark', tip:'Actualización del GP - Trade y Mercadeo'},
+  {d:'2026-10-08', cls:'green-light', tip:'Creación de aplicativos - Trade'},
+  {d:'2026-10-13', cls:'pink-dark', tip:'Aprobación de aplicativos'},
+  {d:'2026-10-06', cls:'pink', tip:'Consolidación del GP, proyectar PVO y provisión de POS - Finanzas'},
+  {d:'2026-10-14', cls:'brown', tip:'Enviar Dashboard de inversiones (Excel y Power BI) - Finanzas'},
+  {d:'2026-10-19', cls:'blue-light', tip:'Envío de novedades a contabilidad'},
+  {d:'2026-10-23', cls:'red-light', tip:'Respuestas de contabilidad'},
+
+  /* Noviembre */
+  {d:'2026-11-20', cls:'green-dark', tip:'Actualización del GP - Trade y Mercadeo'},
+  {d:'2026-11-09', cls:'green-light', tip:'Creación de aplicativos - Trade'},
+  {d:'2026-11-11', cls:'pink-dark', tip:'Aprobación de aplicativos'},
+  {d:'2026-11-06', cls:'pink', tip:'Consolidación del GP, proyectar PVO y provisión de POS - Finanzas'},
+  {d:'2026-11-12', cls:'brown', tip:'Enviar Dashboard de inversiones (Excel y Power BI) - Finanzas'},
+  {d:'2026-11-18', cls:'blue-light', tip:'Envío de novedades a contabilidad'},
+  {d:'2026-11-24', cls:'red-light', tip:'Respuestas de contabilidad'},
+
+  /* Diciembre */
+  {d:'2026-12-18', cls:'green-dark', tip:'Actualización del GP - Trade y Mercadeo'},
+  {d:'2026-12-07', cls:'green-light', tip:'Creación de aplicativos - Trade'},
+  {d:'2026-12-10', cls:'pink-dark', tip:'Aprobación de aplicativos'},
+  {d:'2026-12-04', cls:'pink', tip:'Consolidación del GP, proyectar PVO y provisión de POS - Finanzas'},
+  {d:'2026-12-11', cls:'brown', tip:'Enviar Dashboard de inversiones (Excel y Power BI) - Finanzas'},
+  {d:'2026-12-16', cls:'blue-light', tip:'Envío de novedades a contabilidad'},
+  {d:'2026-12-22', cls:'red-light', tip:'Respuestas de contabilidad'}
+];
+
+/* ========= Utilidades de fecha ========= */
+const fmt = (y,m,d) => `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+const getDaysInMonth = (y,m) => new Date(y, m, 0).getDate(); // m: 1..12
+/* Convertir índice de día JS (0=Dom) a índice lunes-primero (0=Lun..6=Dom) */
+const mondayFirstIndex = jsDay => (jsDay === 0 ? 6 : jsDay - 1);
+
+/* ========= Render del calendario (bloques de 3 meses) ========= */
+(function renderCalendar(){
+  const container = document.getElementById('calendar');
+
+  for(let q=0; q<4; q++){
+    const quarterEl = document.createElement('section');
+    quarterEl.className = 'quarter';
+    container.appendChild(quarterEl);
+
+    for(let i=0; i<3; i++){
+      const month = q*3 + i + 1; // 1..12
+      quarterEl.appendChild(createMonth(YEAR, month));
+    }
+  }
+
+  /* Interacción de tooltips (barra amarilla a lo ancho del mes) */
+  document.querySelectorAll('.month').forEach(monthEl=>{
+    const tipBar = monthEl.querySelector('.tooltip-bar');
+    monthEl.addEventListener('mouseover', e=>{
+      const dayEl = e.target.closest('.day');
+      if(dayEl && dayEl.dataset.tooltip){
+        tipBar.textContent = dayEl.dataset.tooltip;
+        monthEl.classList.add('show-tooltip');
+      }
+    });
+    monthEl.addEventListener('mouseout', e=>{
+      const dayEl = e.target.closest('.day');
+      if(dayEl){
+        monthEl.classList.remove('show-tooltip');
+        tipBar.textContent = '';
+      }
+    });
+  });
+})();
+
+/* Crear el DOM de un mes */
+function createMonth(year, month){
+  const monthNames = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+
+  const monthEl = document.createElement('article');
+  monthEl.className = 'month';
+
+  /* Título del mes */
+  const head = document.createElement('div');
+  head.className = 'month-header';
+  head.textContent = `${monthNames[month-1]} ${year}`;
+  monthEl.appendChild(head);
+
+  /* Encabezado de días (Lun-Dom) */
+  const dayHeader = document.createElement('div');
+  dayHeader.className = 'day-header';
+  DAY_NAMES.forEach(n=>{
+    const d = document.createElement('div');
+    d.textContent = n;
+    dayHeader.appendChild(d);
+  });
+  monthEl.appendChild(dayHeader);
+
+  /* Grid de semanas (rellenos + días reales) */
+  const weeks = document.createElement('div');
+  weeks.className = 'weeks';
+
+  const daysInMonth = getDaysInMonth(year, month);
+  const firstJsDay = new Date(year, month-1, 1).getDay(); // 0..6 (Dom..Sáb)
+  const offset = mondayFirstIndex(firstJsDay);             // 0..6 (Lun..Dom)
+
+  /* Relleno inicial */
+  for(let k=0; k<offset; k++){
+    const empty = document.createElement('div');
+    empty.className = 'day empty';
+    weeks.appendChild(empty);
+  }
+
+  /* Días reales del mes */
+  for(let d=1; d<=daysInMonth; d++){
+    const jsDay = new Date(year, month-1, d).getDay();     // 0..6
+    const dow = mondayFirstIndex(jsDay);                   // 0..6
+    const dateStr = fmt(year, month, d);
+
+    const cell = document.createElement('div');
+    cell.className = 'day';
+
+    /* Fin de semana: Sábado(5) / Domingo(6) */
+    if(dow === 5) cell.classList.add('sat');
+    if(dow === 6) cell.classList.add('sun');
+
+    /* Festivo de Colombia 2026 */
+    if(HOLIDAYS_2026[dateStr]){
+      cell.classList.add('holiday');
+      cell.dataset.tooltip = `Festivo: ${HOLIDAYS_2026[dateStr]}`;
+    }
+
+    /* Fechas específicas de gestión */
+    const t = TASKS.find(x=>x.d === dateStr);
+    if(t){
+      const extraClasses = t.cls.split(' ').filter(Boolean);
+      extraClasses.forEach(c => cell.classList.add(c));
+      cell.dataset.tooltip = t.tip;
+    }
+
+    /* Número centrado */
+    const num = document.createElement('div');
+    num.className = 'num';
+    num.textContent = d;
+    cell.appendChild(num);
+
+    weeks.appendChild(cell);
+  }
+
+  /* Relleno final para completar la cuadrícula */
+  const remainder = weeks.children.length % 7;
+  if(remainder !== 0){
+    for(let k=0; k<(7 - remainder); k++){
+      const empty = document.createElement('div');
+      empty.className = 'day empty';
+      weeks.appendChild(empty);
+    }
+  }
+
+  monthEl.appendChild(weeks);
+
+  /* Barra de tooltip (amarilla, Arial 10px, ancho completo del mes) */
+  const tipBar = document.createElement('div');
+  tipBar.className = 'tooltip-bar';
+  monthEl.appendChild(tipBar);
+
+  return monthEl;
+}
+</script>
+
+</body>
+</html>
