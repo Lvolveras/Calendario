@@ -435,6 +435,32 @@ function createMonth(year, month){
   head.textContent = `${monthNames[month-1]} ${year}`;
   monthEl.appendChild(head);
 
+
+/* Título del mes, días de la semana y grilla más compactos */
+.month .month-title{ font-size: 14px; padding: 8px 10px; }
+.weekdays div{ font-size: 11px; padding: 4px 0; }
+.grid{ gap: 4px; padding: 8px; }
+
+/* Celdas de día ~26px de alto, números centrados y tipografía reducida */
+.day{
+  min-height: 26px;
+  border: 1px solid #edf0f2;
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  padding: 1px;
+}
+.day .day-number{ font-size: 12px; line-height: 1; }
+
+/* Fines de semana y festivos (se mantienen tus lineamientos) */
+.day.weekend .day-number{ color: rgba(255,0,0,1); text-decoration: underline; }
+.day.festivo{ background: #FFF59D !important; color: #000 !important; }
+
+/* Tooltips Arial 8px (sin desbordar) */
+.tooltip{
+  font-family: Arial, Helvetica, sans-serif; font-size: 8px;
+  bottom: 4px; padding: 3px 4px; max-width: calc(100% - 8px);
+}
+  
   /* Encabezado de días (Lun-Dom) */
   const dayHeader = document.createElement('div');
   dayHeader.className = 'day-header';
@@ -519,6 +545,7 @@ function createMonth(year, month){
 
 </body>
 </html>
+
 
 
 
