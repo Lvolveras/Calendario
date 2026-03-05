@@ -22,7 +22,7 @@
     --blue-light: #90CAF9;         /* Novedades a contabilidad */
     --red-light: #FFCDD2;          /* Respuestas de contabilidad */
 
-    --cell-size: 36px;             /* altura compacta de cada día */
+    --cell-size: 32px;             /* altura compacta de cada día (reducido para más contenido visible) */
     --font-family: Arial, Helvetica, sans-serif;
   }
 
@@ -80,10 +80,18 @@
   /* Contenedor del año en bloques de 3 meses */
   .year{
     padding:16px 20px 24px;
-    display:flex;
-    flex-direction:column;
-    gap:24px;
+    /* use a responsive grid so multiple months can appear side-by-side
+       and vertical height is minimized */
+    display:grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap:16px;
+    /* optional max-height to keep entire calendar within viewport and allow
+       internal scrolling if absolutely necessary */
+    max-height: calc(100vh - 180px);
+    overflow-y: auto;
   }
+  /* quarter wrapper is no longer used but retain for backwards
+     compatibility or fallback */
   .quarter{
     display:grid;
     grid-template-columns: repeat(3, minmax(280px, 1fr));
@@ -360,19 +368,14 @@ const getDaysInMonth = (y,m) => new Date(y, m, 0).getDate(); // m: 1..12
 /* Convertir índice de día JS (0=Dom) a índice lunes-primero (0=Lun..6=Dom) */
 const mondayFirstIndex = jsDay => (jsDay === 0 ? 6 : jsDay - 1);
 
-/* ========= Render del calendario (bloques de 3 meses) ========= */
+/* ========= Render del calendario ========= */
 (function renderCalendar(){
   const container = document.getElementById('calendar');
 
-  for(let q=0; q<4; q++){
-    const quarterEl = document.createElement('section');
-    quarterEl.className = 'quarter';
-    container.appendChild(quarterEl);
-
-    for(let i=0; i<3; i++){
-      const month = q*3 + i + 1; // 1..12
-      quarterEl.appendChild(createMonth(YEAR, month));
-    }
+  // append all 12 months directly to the year grid so they can wrap
+  // responsively; this reduces vertical scrolling on wide screens.
+  for(let month=1; month<=12; month++){
+    container.appendChild(createMonth(YEAR, month));
   }
 
   /* Interacción de tooltips (barra amarilla a lo ancho del mes) */
@@ -492,5 +495,7 @@ function createMonth(year, month){
 
 </body>
 </html>
+
+
 
 
